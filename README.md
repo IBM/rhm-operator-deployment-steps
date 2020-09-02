@@ -164,21 +164,21 @@ Now you are ready to register the OpenShift cluster on Red Hat Marketplace. This
 
 To create a project that you can use and manage from the command line, go to the Red Hat Marketplace web console and click **Create Project**. Name the project: `Cockroachdb-test-project`.
 
-    ![rhm](doc/source/images/create-project.png)
+![rhm](doc/source/images/create-project.png)
 
 ## 2. Connect to the Openshift Cluster in your CLI
 
-1. Log in to the ROKS (IBM Managed) Openshift<!--EM: What's the actual product name you're referecing here? We can't use the ROKS acronym--> cluster through your CLI. To log in, you need a token which can be genrated after you log in to Openshift Cluster web console. See below screenshot to `copy the path`. <--EM: We can't tell people to copy the path b/c not all our readers will be able to see the image. For accessibility reasons, will you explain what the reader is supposed to do exactly?-->
+1. Log in to the Red Hat OpenShift Kubernetes Service (ROKS) (IBM Managed) cluster through your CLI. To log in, you need a token which can be genrated after you log in to OpenShift Cluster web console. Click on the **IAM Username** on top left corner and `copy the path` as shown.
 
-    ![](doc/source/images/Login-CopyCommand.png)
+![](doc/source/images/Login-CopyCommand.png)
 
-1. A new window will open requesting the login token details. See below screenshot for details. Copy the login token as per the below screenshot. <!--EM: Again, we have to describe the steps and not rely on the images to tell readers what to do.-->
+1. A new window will open requesting the login token details. Click on **display token** and copy the first login token as shown.
 
-    ![](doc/source/images/Login-Token.png)
+![](doc/source/images/Login-Token.png)
 
-1. In your terminal, paste the login command<!--EM: What command is that?? Will readers know?-->. Once you login, you should see a screen that has information about your login name, your server, the token, and the projects. <!--EM: I'm not sure if we need the image below since so much is whited out. Do you think it's necessary? If so, we need to describe it-->.
+1. In your terminal, paste the login command. Once you login, you should see a screen that has information about your login name, your server, the token, and the projects.
 
-    ![](doc/source/images/CLI-Login.png)
+![](doc/source/images/CLI-Login.png)
 
 ## 3. Deploy a CockroachDB Operator on an OpenShift cluster
 
@@ -196,13 +196,11 @@ Now that you have your clusters set up, the following steps show you how to dpep
 
     > You can visit [Workspace > My Software](https://marketplace.redhat.com/en-us/workspace/software) to view your list of purchased softwares.
 
-1. In the Red Hat Marketplace dashbaord, select the CockroachDB tile, and then click the **Operators tab**. Select the **Install Operator** button. Leave the default selection for Update channel and Approval strategy. Select the cluster and namespace scope as `cockroachdb-test` for the operator and click **Install**. <!--EM: The following image is super blurry. Do you have another one?-->
+1. In the Red Hat Marketplace dashbaord, select the CockroachDB tile, and then click the **Operators tab**. Select the **Install Operator** button. Leave the default selection for Update channel and Approval strategy. Select the cluster and namespace scope as `cockroachdb-test` for the operator and click **Install**. 
 
     ![rhm-installoperator](doc/source/images/rhminstalloperator.png)
 
 1. You should see a message that indicates the install process initiated in the cluster.
-
-<!--EM: deleted that image b/c it was blurry but didn't add value-->
 
 ## 4. Create a database instance
 
