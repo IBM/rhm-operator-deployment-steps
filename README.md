@@ -32,7 +32,7 @@ keywords:               # REQUIRED - comma separated list
 
 last_updated:           # REQUIRED - Note: date format is YYYY-MM-DD
 
-primary_tag:          # REQUIRED - Note: Choose only only one primary tag. Multiple primary tags will result in automation failure. Additional non-primary tags can be added below.
+primary_tag: "databases"
 
 pta:                    # REQUIRED - Note: can be only one
 # For a full list of options see https://github.ibm.com/IBMCode/Definitions/blob/master/primary-technology-area.yml
@@ -61,10 +61,6 @@ runtimes:               # OPTIONAL - Note: Select runtimes from the complete set
 # Example (remove the # to uncomment):
  # - "asp.net 5"
 
-series:                 # OPTIONAL
- - type:
-   slug:
-
 services:               # OPTIONAL - Note: please select services from the complete set of services below. Do not create new services. Only use services specifically in use by your content.
 # For a full list of options see https://github.ibm.com/IBMCode/Definitions/blob/master/services.yml
 # Use the "slug" value found at the link above to include it in this content.
@@ -80,7 +76,9 @@ tags:
 # Example (remove the # to uncomment):
  # - "blockchain"
 
-title:                  # REQUIRED
+title: Get started using a CockroachDB operator hosted on Red Hat Marketplace
+meta_title: Deploy a CockroachDB operator to an OpenShift cluster
+subtitle: Deploy a Cockraoch DB operator to an OpenShift cluster 
 
 translators:             # OPTIONAL - Note: can be one or more
   - name:
@@ -90,147 +88,161 @@ type: tutorial
 
 ---
 
-# Steps to Deploy CockroachDB Operator from Red Hat Marketplace on OpenShift Cluster
+Red Hat® OpenShift® 4 users can use [Red Hat Marketplace](https://marketplace.redhat.com/en-us/about) to access certified software for container-based environments. Software in the marketplace is immediately available to deploy on any Red Hat OpenShift cluster, in a fast, integrated way. In this tutorial, in this tutorial, we show you how to get up running with CockroachDB hosted on Red Hat Marketplace. CockroachDB is an elastic SQL database that easily scales transactions for your apps and services.
 
-### Step 1: Configure Openshift Cluster(ROKS) with Red Hat Marketplace
+## Prerequisites
 
-#### Step 1.1: Download OpenShift Command Line Interface (CLI) binary
+* Red Hat OpenShift version 4.3 is requried to use with the software in Red Hat Markeplace. You can set up a class cluster on IBM Cloud using these instructions: 
+[Set up OpenShift Cluster](https://cloud.ibm.com/docs/openshift?topic=openshift-getting-started).
+* [Create an account](https://marketplace.redhat.com/api-security/en-us/login/landing) on Red Hat Marketplace.
 
-- Follow the steps below to launch the cluster console which is also called RedHat OpenShift Container Platform.
+## Steps
 
-- Login to [IBM Cloud Account](https://cloud.ibm.com/) and navigate to Dashboard as shown.
+To get up and running with CockroachDB hosted on Red Hat Marketplace you will:
 
-![rhm](doc/source/images/dashboard.png)
+1. [Configure a Red Hat OpenShift cluster with Red Hat Marketplace by:](#1-configure-a-red-hat-openhift-cluster-with-red-hat-marketplace)
+    * Downloading an OpenShift command line interface (CLI) binary
+    * Registering the cluster on Red Hat Marketplace
+    * Creating a project in the Red Hat Marketplace web console
+1. [Connect to the Openshift Cluster in your CLI](#2-connect-to-the-openshift-cluster-in-your-cli)
+1. [Deploy a CockroachDB Operator on an OpenShift cluster](#3-deploy-a-cockroachdb-operator-on-an-openshift-cluster)
+1. [Create a database instance](#4-create-a-database-instance)
 
-- Click on **Clusters** and select the cluster which you have created under prerequisites. In our case, cluster name is **cp-rhm-poc**.
+## 1. Configure a Red Hat OpenShift cluster with Red Hat Marketplace
 
-![](doc/source/images/cluster.png)
+To configure a Red Hat OpenShift cluster with Red Hat Marketplace, you need to download the OpenShift CLI binary, register the cluster on Red Hat Marketplace, and create a project in the Red Hat Marketplace console.
 
-- After you launch the cluster, click on **OpenShift web console** on the top right hand side.
+### Download an OpenShift command line interface (CLI) binary
 
-![](doc/source/images/web-console.png)
+To launch the cluster console &mdash; also called Red Hat OpenShift Container Platform &mdash; follow these steps:
 
-- We can see the RedHat OpenShift Container Platform (Web Console). Click on **question mark icon** on the top right hand side and select **Command Line Tools**. 
+1. Log in to your [IBM Cloud Account](https://cloud.ibm.com/) and navigate to the dashboard.
 
-![](doc/source/images/cmd-line-tools.png)
+    ![rhm](doc/source/images/dashboard.png)
 
-- Navigate to the section `oc - OpenShift Command Line Interface (CLI)` and download the respective oc binary onto your local system. 
+1. Click **Clusters** and select the cluster you created in the prerequisites. In this case, the cluster name is `cp-rhm-poc`.
 
-**NOTE: This is needed to manage OpenShift projects from a terminal and is further extended to natively support OpenShift Container Platform features.**
+    ![](doc/source/images/cluster.png)
 
-![](doc/source/images/oc-binary.png)
+1. After you launch the cluster, click on **OpenShift web console** on the top right-hand side of your screen.
 
-- We are all set to proceed to next step which is to register the OpenShift cluster on RedHat Marketplace platform. 
+    ![](doc/source/images/web-console.png)
 
-**NOTE: This is mandatory to install any operators from RedHat Marketplace platform using the OpenShift cluster**.
+1. From the Red Hat OpenShift Container Platform web console, select the **question mark icon** on the top right-hand side and select **Command Line Tools**. 
 
-#### Step 1.2: Register the cluster on RedHat Marketplace
+    ![](doc/source/images/cmd-line-tools.png)
 
-- Sign up and login to RHM portal at [Link](https://marketplace.redhat.com/en-us) and click on **workspace** and then click on cluster. We need to add our new OpenShift cluster and register it on RHM platform.
+1. Navigate to the section `oc - OpenShift Command Line Interface (CLI)` and download the respective oc binary onto your local system. 
 
-![](doc/source/images/add-cluster.png)
+    **Note: You need this binary to manage OpenShift projects from a terminal and to natively support OpenShift Container Platform features.**
 
-- Update the **cluster name**, generate the pull secret as per the instructions and save it as shown.
+    ![](doc/source/images/oc-binary.png)
 
-![](doc/source/images/cluster-details.png)
+Now you are ready to register the OpenShift cluster on Red Hat Marketplace. This step is mandatory to install any operators from Red Hat Marketplace platform using the OpenShift cluster.
 
-- Copy the curl command which starts with `curl -sL https` and append the pull secret towards the end. 
+### Register the cluster on Red Hat Marketplace
 
-**NOTE: The entire script should be handy to be used in next step.**
+1. Log in to the [Red Hat Marketplace](https://marketplace.redhat.com/en-us). Select a workspace and click **Cluster**. You need to add the new OpenShift cluster and register it on the Red Hat Marketplace platform.
 
-- We need to start the cluster first to register it. Open a terminal and type `oc login`, update the `username` and `password` which are used for accessing the cluster and hit enter. 
+    ![](doc/source/images/add-cluster.png)
 
-![](doc/source/images/start-cluster.png)
+1. Update the cluster name, follow prompts to generate a pull secret, and save it.
 
-- The cluster is up and running at this point. We need to run the entire script which is from previous step and hit enter. It will take a couple of mins and we can see that we have successfully registered the cluster on RHM portal.
+    ![](doc/source/images/cluster-details.png)
 
-![](doc/source/images/register-cluster.png)
+1. In the GUI, copy the curl command which starts with `curl -sL https` and append the pull secret towards the end. The entire script should be handy to be used in next step.
 
-#### Step 1.3: Create a project in web console
+1. You need to start the cluster first to register it. Open a terminal and type `oc login`, update the username and password which are used for accessing the cluster. Press **Enter**.
 
-- We need to create a project to be used and managed from command line. Click on **Create Project** and give a name as `Cockroachdb-test-project`.
+    ![](doc/source/images/start-cluster.png)
 
-![rhm](doc/source/images/create-project.png)
+- Your cluster should be up and running at this point. You need to run the entire script from the previous step and hit `Enter`. It will take a couple of minutes to see that you have successfully registered the cluster on the Red Hat Marketplace portal.
 
-### Step 2: Connect to the Openshift Cluster in CLI (Command Line Interface)
+    ![](doc/source/images/register-cluster.png)
 
-- Login to the ROKS(IBM Managed) Openshift cluster through CLI(command line Iterface). 
-To login you would require token which can be genrated after you login to Openshift Cluster web console. See below screenshot to `copy the path`.
-![](doc/source/images/Login-CopyCommand.png)
+### Create a project in the Red Hat Marketplace web console
 
-- A new window will open with the login token details. See below screenshot for details. Copy the login token as per the below screenshot.
-![](doc/source/images/Login-Token.png)
+To create a project that you can use and manage from the command line, go to the Red Hat Marketplace web console and click **Create Project**. Name the project: `Cockroachdb-test-project`.
 
-- In terminal, paste the login command, Once you login you would see a similar screen as shown below.
-![](doc/source/images/CLI-Login.png)
+    ![rhm](doc/source/images/create-project.png)
 
-### Step 3: Deploy CockroachDB Operator on OpenShift cluster
+## 2. Connect to the Openshift Cluster in your CLI
 
-- CockroachDB is a cloud-native database—scalable, distributed SQL for Kubernetes. It is a great choice for OpenShift because it offers the familiarity and power of SQL with the comfort of your existing ORMs—and automated sharding ensures great performance as you scale your applications.
+1. Log in to the ROKS (IBM Managed) Openshift<!--EM: What's the actual product name you're referecing here? We can't use the ROKS acronym--> cluster through your CLI. To log in, you need a token which can be genrated after you log in to Openshift Cluster web console. See below screenshot to `copy the path`. <--EM: We can't tell people to copy the path b/c not all our readers will be able to see the image. For accessibility reasons, will you explain what the reader is supposed to do exactly?-->
 
-- Go to the [Marketplace catalog](https://marketplace.redhat.com/en-us) and search for CockroachDB. Select `CockroachDB` from the results as shown.
+    ![](doc/source/images/Login-CopyCommand.png)
 
-![rhm](doc/source/images/rhmcdb.png)
+1. A new window will open requesting the login token details. See below screenshot for details. Copy the login token as per the below screenshot. <!--EM: Again, we have to describe the steps and not rely on the images to tell readers what to do.-->
 
-- The CockroachDB product page gives you an overview, documentation, and pricing options associated with the product. Click on the `Free Trial` button as shown.
+    ![](doc/source/images/Login-Token.png)
 
-![rhm-freetrial](doc/source/images/rhmcdbfreetrial.png)
+1. In your terminal, paste the login command<!--EM: What command is that?? Will readers know?-->. Once you login, you should see a screen that has information about your login name, your server, the token, and the projects. <!--EM: I'm not sure if we need the image below since so much is whited out. Do you think it's necessary? If so, we need to describe it-->.
 
-- Next, the purchase summary will show the `Subscription term` and total cost is $0.00. Click `Start trial` as shown.
+    ![](doc/source/images/CLI-Login.png)
 
-![rhm-starttrial](doc/source/images/rhmstarttrial.png)
+## 3. Deploy a CockroachDB Operator on an OpenShift cluster
 
-> You can visit [Workspace > My Software](https://marketplace.redhat.com/en-us/workspace/software) to view your list of purchased softwares.
+Now that you have your clusters set up, the following steps show you how to dpeploy a CockroachDB operator on an OpenShift cluster.
 
-- Back in the **web dashboard**, select the **CockroachDB tile** and then select the **Operators tab**. Click on the `Install Operator` button. Leave the default selection for **Update channel** and **Approval strategy**. Select the cluster and namespace scope as `cockroachdb-test` for the operator and click `Install`.
+1. Go to the [Red Hat Marketplace catalog](https://marketplace.redhat.com/en-us) and search for CockroachDB. Select `CockroachDB` from the results.
 
-![rhm-installoperator](doc/source/images/rhminstalloperator.png)
+1. The CockroachDB product page gives you an overview, documentation, and pricing options associated with the product. Select the `Free Trial` button.
 
-- A message as shown below appears at the top of your screen indicating the install process initiated in the cluster.
+    ![rhm-freetrial](doc/source/images/rhmcdbfreetrial.png)
 
-![rhm-successmsg](doc/source/images/rhmsuccessmsg.png)
+1. Next, the purchase summary will show the Subscription term, with a total cost of $0.00. Click **Start trial**.
 
-### Step 4: Create a database instance
+    ![rhm-starttrial](doc/source/images/rhmstarttrial.png)
 
-- Log into your **OpenShift cluster** and look under `Operators > Installed Operators` to confirm the installation was successful.
+    > You can visit [Workspace > My Software](https://marketplace.redhat.com/en-us/workspace/software) to view your list of purchased softwares.
 
-- The operator `CockroachDB` should list under the project/namespace `cockroachdb-test` as shown.
+1. In the Red Hat Marketplace dashbaord, select the CockroachDB tile, and then click the **Operators tab**. Select the **Install Operator** button. Leave the default selection for Update channel and Approval strategy. Select the cluster and namespace scope as `cockroachdb-test` for the operator and click **Install**. <!--EM: The following image is super blurry. Do you have another one?-->
 
-![ocp-installedoperators](doc/source/images/ocpinstalledoperators.png)
+    ![rhm-installoperator](doc/source/images/rhminstalloperator.png)
 
-- Click on `CockroachDB` operator, under **Provided API's**, click on `Create Instance` as shown.
+1. You should see a message that indicates the install process initiated in the cluster.
 
-![ocp-createdbinstance](doc/source/images/ocpcreatedbinstance.png)
+<!--EM: deleted that image b/c it was blurry but didn't add value-->
 
-- The **Create Cockroachdb** page will be displayed with the default YAML, do not edit anything in the YAML file, just click on the `Create` button as shown.
+## 4. Create a database instance
 
-![ocp-createyaml](doc/source/images/ocpcreateyaml.png)
+1. Log in to your OpenShift cluster. From the left navigation, click **Operators** and select **Installed Operators** to confirm the installation was successful. You should see the `CockroachDB` operator listed under the `cockroachdb-test` project.
 
-- CockroachDB pods should come up when the database installation is completed. 
+    ![ocp-installedoperators](doc/source/images/ocpinstalledoperators.png)
 
-- Run the following command in terminal to check the status:
+1. On the CockroachDB operator screen, look under Provided APIs and click on **Create Instance**.
 
-```bash
-$ oc project cockroachdb-test
-```
+    ![ocp-createdbinstance](doc/source/images/ocpcreatedbinstance.png)
 
-- You should get a result similar to the following:
+1. The Create Cockroachdb page displays with the default YAML. Do not edit anything in the YAML file; just click the **Create** button.
 
-```bash
-Now using project "cockroachdb-test" on server "https://c107-e.us-south.containers.cloud.ibm.com:32137".
-```
+    ![ocp-createyaml](doc/source/images/ocpcreateyaml.png)
 
-- At this point, the database pods are deployed, UP and running. To check the pods run the following command:
+    CockroachDB pods should come up when the database installation is completed. 
 
-```bash
-$ kubectl get pods
-```
+1. Run the following command in your terminal to check the status:
 
-```bash
-NAME                                               READY   STATUS      RESTARTS   AGE
-cockroachdb-6867d47bc5-l44zs                       1/1     Running     0          12d
-example-cockroachdb-0                              1/1     Running     3          3d21h
-example-cockroachdb-1                              1/1     Running     1          12d
-example-cockroachdb-2                              1/1     Running     3          12d
-example-cockroachdb-init-nzvx8                     0/1     Completed   0          12d
-```
+    ```bash
+    $ oc project cockroachdb-test
+    ```
+
+    You should get a result similar to the following:
+
+     ```bash
+    Now using project "cockroachdb-test" on server "https://c107-e.us-south.containers.cloud.ibm.com:32137".
+    ```
+
+1. At this point, the database pods are deployed, UP and running. To check the pods run the following command:
+
+    ```bash
+    $ kubectl get pods
+    ```
+
+    ```bash
+    NAME                                               READY   STATUS      RESTARTS   AGE
+    cockroachdb-6867d47bc5-l44zs                       1/1     Running     0          12d
+    example-cockroachdb-0                              1/1     Running     3          3d21h
+    example-cockroachdb-1                              1/1     Running     1          12d
+    example-cockroachdb-2                              1/1     Running     3          12d
+    example-cockroachdb-init-nzvx8                     0/1     Completed   0          12d
+    ```
